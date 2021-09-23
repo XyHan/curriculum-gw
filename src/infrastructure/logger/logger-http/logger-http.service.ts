@@ -15,7 +15,7 @@ export class LoggerHttpService {
     this.httpLogger.token('id_request', (req) => req.headers.id_request);
   }
 
-  getMiddleWare(environment: string): morgan {
+  getMiddleWare(environment: string = 'development'): morgan {
     this.loggerStream.setEnv(environment);
     return this.httpLogger(this.format, { stream: this.loggerStream });
   }
