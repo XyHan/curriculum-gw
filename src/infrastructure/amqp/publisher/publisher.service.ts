@@ -1,11 +1,11 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Channel } from 'amqplib';
 import { ConfigService } from '../../config/config.service';
-import { PublisherInterface } from './publisher.interface';
+import { PublisherInterface } from '../../../domain/amqp/publisher.interface';
 import { PublisherException } from './publisher.exception';
 import { LoggerAdapterService } from '../../logger/logger-adapter.service';
 import { ConnectionService } from '../connect/connection.service';
-import { MessageInterface } from '../../../domain/bus/message';
+import { MessageInterface } from '../../../domain/amqp/message.interface';
 import { classToPlain } from 'class-transformer';
 
 const CURRICULUM_COMMAND_EXCHANGE = 'ex_curriculum_command';

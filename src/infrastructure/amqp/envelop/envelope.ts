@@ -1,6 +1,6 @@
 import { Expose, serialize } from 'class-transformer';
-import { Message } from '../../../domain/bus/message';
-import { EnvelopeInterface } from './envelope.interface';
+import { Message } from '../message/message';
+import { EnvelopeInterface } from '../../../domain/amqp/envelope.interface';
 
 export class Envelope implements EnvelopeInterface {
   @Expose({ name: 'serialized_message' })

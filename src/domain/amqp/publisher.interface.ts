@@ -1,4 +1,4 @@
-import { MessageInterface } from '../../../domain/bus/message';
+import { MessageInterface } from './message.interface';
 
 export interface PublisherInterface {
   publish(message: MessageInterface): Promise<void>;

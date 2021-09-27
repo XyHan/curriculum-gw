@@ -2,7 +2,7 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import * as amqp from 'amqplib';
 import { ConfigService } from '../../config/config.service';
 import { LoggerAdapterService } from '../../logger/logger-adapter.service';
-import { ConnectionInterface } from './connection.interface';
+import { ConnectionInterface } from '../../../domain/amqp/connection.interface';
 import { ConnectionException } from './connection.exception';
 import { LoggerVErrorInterface } from '../../logger/logger-v-error.interface';
 

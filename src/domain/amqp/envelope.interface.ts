@@ -1,7 +1,7 @@
-import { Message } from '../../../domain/bus/message';
+import { MessageInterface } from './message.interface';
 
 export interface EnvelopeInterface {
   messageType: string;
   serializedMessage: string;
-  message: Message;
+  message: MessageInterface;
 }

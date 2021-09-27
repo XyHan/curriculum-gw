@@ -1,9 +1,4 @@
-export interface MessageInterface {
-  requestId: string;
-  userUuid: string;
-  name: string;
-  version: number;
-}
+import { MessageInterface } from '../../../domain/amqp/message.interface';
 
 export class Message implements MessageInterface {
   private readonly _requestId: string;

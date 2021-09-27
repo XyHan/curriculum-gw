@@ -5,12 +5,12 @@ import { ConsumeMessage } from 'amqplib';
 import { ConfigService } from '../../config/config.service';
 import { deserialize, plainToClass } from 'class-transformer';
 import { ConnectionService } from '../connect/connection.service';
-import { ConsumerInterface } from './consumer.interface';
+import { ConsumerInterface } from '../../../domain/amqp/consumer.interface';
 import { LoggerVErrorInterface } from '../../logger/logger-v-error.interface';
 import { LoggerAdapterService } from '../../logger/logger-adapter.service';
 import { Envelope } from '../envelop/envelope';
-import { EnvelopeInterface } from '../envelop/envelope.interface';
-import { MessageInterface } from '../../../domain/bus/message';
+import { EnvelopeInterface } from '../../../domain/amqp/envelope.interface';
+import { MessageInterface } from '../../../domain/amqp/message.interface';
 import { ConsumerException } from './consumer.exception';
 
 const CURRICULUM_EVENT_EXCHANGE = 'ex_curriculum_event';
