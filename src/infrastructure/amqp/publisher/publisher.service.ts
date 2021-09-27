@@ -6,8 +6,8 @@ import { PublisherException } from './publisher.exception';
 import { LoggerAdapterService } from '../../logger/logger-adapter.service';
 import { ConnectionService } from '../connect/connection.service';
 import { MessageInterface } from '../../../domain/amqp/message.interface';
-import { classToPlain } from 'class-transformer';
-import {ConnectionInterface} from "../../../domain/amqp/connection.interface";
+import { serialize } from 'class-transformer';
+import { ConnectionInterface } from '../../../domain/amqp/connection.interface';
 
 const CURRICULUM_COMMAND_EXCHANGE = 'ex_curriculum_command';
 const CURRICULUM_COMMAND_QUEUE = 'q_curriculum_gw_to_curriculum_api_command';
@@ -31,8 +31,9 @@ export class PublisherService extends ConnectionService implements PublisherInte
 
   public async publish(message: MessageInterface): Promise<void> {
     try {
-      const bufferedMessage = Buffer.from(classToPlain(message).toString());
-      await this.sendMessage(bufferedMessage);
+      const options: object = {  delivery_mode:	1, headers: { class: message.name }};
+      const bufferedMessage = Buffer.from(serialize(message));
+      await this.sendMessage(bufferedMessage, options);
       this.logger.log(`Publisher - Message published: ${message.toString()} - ${Date.now()}`);
     } catch (e) {
       const error = new PublisherException(e, 'PublisherService - Error on send message', { message });
@@ -41,8 +42,8 @@ export class PublisherService extends ConnectionService implements PublisherInte
     }
   }
 
-  private async sendMessage(message: Buffer): Promise<void> {
-    await this.channel.publish(CURRICULUM_COMMAND_EXCHANGE, '', message);
+  private async sendMessage(message: Buffer, options: object): Promise<void> {
+    await this.channel.publish(CURRICULUM_COMMAND_EXCHANGE, '', message, options);
   }
 
   private async setupChannel(): Promise<void> {
