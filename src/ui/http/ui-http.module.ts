@@ -1,8 +1,17 @@
 import { Module } from '@nestjs/common';
-import { AuthGuard } from './guard/auth.guard';
+import { GraphQLModule } from '@nestjs/graphql';
 
 @Module({
-  imports: [],
-  providers: [AuthGuard],
+  imports: [
+    GraphQLModule.forRoot({
+      debug: true,
+      autoSchemaFile: 'schema.gql',
+      installSubscriptionHandlers: true,
+      context: ({ req }) => ({
+        headers: req?.headers,
+      }),
+    }),
+  ],
+  providers: [],
 })
 export class UiHttpModule {}
