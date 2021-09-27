@@ -1,0 +1,19 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type CommandType {
+  requestId: String!
+}
+
+type CvType {
+  uuid: String!
+}
+
+type Query {
+  listAllCVs: [CvType!]!
+}
+
+type Mutation {
+  createACv(requestId: String!): CommandType!
+}

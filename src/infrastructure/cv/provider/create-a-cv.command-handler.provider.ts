@@ -6,7 +6,7 @@ import { LoggerInterface } from '../../../domain/utils/logger/logger.interface';
 import { LoggerAdapterService } from '../../logger/logger-adapter.service';
 
 export const createACvCommandHandlerProvider: FactoryProvider = {
-  provide: 'CREATE_A_COMMENT_CV_HANDLER',
+  provide: 'CREATE_A_CV_COMMAND_HANDLER',
   useFactory: (publisher: PublisherInterface, logger: LoggerInterface) => {
     return new CreateACvCommandHandler(publisher, logger);
   },

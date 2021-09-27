@@ -12,6 +12,7 @@ import { Envelope } from '../envelop/envelope';
 import { EnvelopeInterface } from '../../../domain/amqp/envelope.interface';
 import { MessageInterface } from '../../../domain/amqp/message.interface';
 import { ConsumerException } from './consumer.exception';
+import { ConnectionInterface } from '../../../domain/amqp/connection.interface';
 
 const CURRICULUM_EVENT_EXCHANGE = 'ex_curriculum_event';
 const CURRICULUM_EVENT_QUEUE = 'q_curriculum_api_to_curriculum_gw_event';
@@ -21,6 +22,7 @@ export class ConsumerService extends ConnectionService implements ConsumerInterf
   private channel: Channel;
 
   constructor(
+    @Inject(ConnectionService) protected readonly connectionService: ConnectionInterface,
     @Inject(ConfigService) protected readonly configService: ConfigService,
     @Inject(LoggerAdapterService) protected readonly logger: LoggerVErrorInterface,
     @Inject(EventBus) private readonly eventBus: EventBus,
@@ -29,6 +31,7 @@ export class ConsumerService extends ConnectionService implements ConsumerInterf
   }
 
   public async onModuleInit(): Promise<void> {
+    await this.connect();
     await this.setupChannel();
     await this.consume(this.channel, CURRICULUM_EVENT_QUEUE);
   }

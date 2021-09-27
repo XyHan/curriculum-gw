@@ -1,10 +1,12 @@
 import { PublisherInterface } from '../../../../domain/amqp/publisher.interface';
 import { CreateACvCommand } from './create-a-cv.command';
 import { CreateACvCommandHandler } from './create-a-cv.command-handler';
+import { LoggerMock } from '../../../../domain/utils/logger/logger.mock';
 
 describe('CreateACVCommandHandler tests', () => {
   describe('success', () => {
     it('Send CreateACVCommand in amqp bus', async () => {
+      const loggerMock = new LoggerMock();
       const publisherMock: PublisherInterface = {
         publish: jest.fn((command: CreateACvCommand) => {
           return new Promise(resolve => {
@@ -13,7 +15,7 @@ describe('CreateACVCommandHandler tests', () => {
         }),
         close: jest.fn(),
       }
-      const handler = new CreateACvCommandHandler(publisherMock);
+      const handler = new CreateACvCommandHandler(publisherMock, loggerMock);
       const command = new CreateACvCommand('181a146e-8c58-44c2-a828-1439b606e1e7', '47546f8f-67ba-478e-b948-a8fe2746de6e');
       const handledCommand = await handler.handle(command);
       expect(handledCommand.requestId).toEqual('181a146e-8c58-44c2-a828-1439b606e1e7');
@@ -22,6 +24,7 @@ describe('CreateACVCommandHandler tests', () => {
 
   describe('error', () => {
     it('Amqp bus exception', async () => {
+      const loggerMock = new LoggerMock();
       const publisherMock: PublisherInterface = {
         publish: jest.fn((command: CreateACvCommand) => {
           return new Promise((resolve, reject) => {
@@ -31,7 +34,7 @@ describe('CreateACVCommandHandler tests', () => {
         }),
         close: jest.fn(),
       }
-      const handler = new CreateACvCommandHandler(publisherMock);
+      const handler = new CreateACvCommandHandler(publisherMock, loggerMock);
       const command = new CreateACvCommand('181a146e-8c58-44c2-a828-1439b606e1e7', '47546f8f-67ba-478e-b948-a8fe2746de6e');
       try {
         await handler.handle(command);

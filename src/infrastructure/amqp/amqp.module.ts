@@ -4,9 +4,11 @@ import { ConfigModule } from '../config/config.module';
 import { PublisherService } from './publisher/publisher.service';
 import { ConsumerService } from './consumer/consumer.service';
 import { ConnectionService } from './connect/connection.service';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
   imports: [
+    CqrsModule,
     ConfigModule,
     LoggerModule
   ],
@@ -14,6 +16,10 @@ import { ConnectionService } from './connect/connection.service';
     ConnectionService,
     PublisherService,
     ConsumerService
+  ],
+  exports: [
+    PublisherService,
+    ConsumerService,
   ]
 })
 export class AmqpModule {}

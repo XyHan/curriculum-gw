@@ -7,6 +7,7 @@ import { LoggerAdapterService } from '../../logger/logger-adapter.service';
 import { ConnectionService } from '../connect/connection.service';
 import { MessageInterface } from '../../../domain/amqp/message.interface';
 import { classToPlain } from 'class-transformer';
+import {ConnectionInterface} from "../../../domain/amqp/connection.interface";
 
 const CURRICULUM_COMMAND_EXCHANGE = 'ex_curriculum_command';
 const CURRICULUM_COMMAND_QUEUE = 'q_curriculum_gw_to_curriculum_api_command';
@@ -16,6 +17,7 @@ export class PublisherService extends ConnectionService implements PublisherInte
   private channel: Channel;
 
   constructor(
+    @Inject(ConnectionService) protected readonly connectionService: ConnectionInterface,
     @Inject(ConfigService) protected readonly configService: ConfigService,
     @Inject(LoggerAdapterService) protected readonly logger: LoggerAdapterService,
   ) {
@@ -23,6 +25,7 @@ export class PublisherService extends ConnectionService implements PublisherInte
   }
 
   async onModuleInit(): Promise<void> {
+    await this.connect();
     await this.setupChannel();
   }
 
