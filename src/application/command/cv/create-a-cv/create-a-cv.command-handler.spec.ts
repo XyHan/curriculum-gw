@@ -2,6 +2,7 @@ import { PublisherInterface } from '../../../../domain/amqp/publisher.interface'
 import { CreateACvCommand } from './create-a-cv.command';
 import { CreateACvCommandHandler } from './create-a-cv.command-handler';
 import { LoggerMock } from '../../../../domain/utils/logger/logger.mock';
+import { ConfigService } from '../../../../infrastructure/config/config.service';
 
 describe('CreateACVCommandHandler tests', () => {
   describe('success', () => {
@@ -15,8 +16,8 @@ describe('CreateACVCommandHandler tests', () => {
         }),
         close: jest.fn(),
       }
-      const handler = new CreateACvCommandHandler(publisherMock, loggerMock);
-      const command = new CreateACvCommand('181a146e-8c58-44c2-a828-1439b606e1e7', '47546f8f-67ba-478e-b948-a8fe2746de6e');
+      const handler = new CreateACvCommandHandler(publisherMock, loggerMock, new ConfigService());
+      const command = new CreateACvCommand('181a146e-8c58-44c2-a828-1439b606e1e7', '', '', '', '', '', 0, '', '', '', '', '');
       const handledCommand = await handler.handle(command);
       expect(handledCommand.requestId).toEqual('181a146e-8c58-44c2-a828-1439b606e1e7');
     });
@@ -34,8 +35,8 @@ describe('CreateACVCommandHandler tests', () => {
         }),
         close: jest.fn(),
       }
-      const handler = new CreateACvCommandHandler(publisherMock, loggerMock);
-      const command = new CreateACvCommand('181a146e-8c58-44c2-a828-1439b606e1e7', '47546f8f-67ba-478e-b948-a8fe2746de6e');
+      const handler = new CreateACvCommandHandler(publisherMock, loggerMock, new ConfigService());
+      const command = new CreateACvCommand('181a146e-8c58-44c2-a828-1439b606e1e7', '', '', '', '', '', 0, '', '', '', '', '');
       try {
         await handler.handle(command);
       } catch (e) {

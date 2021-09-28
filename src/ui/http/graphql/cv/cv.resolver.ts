@@ -13,6 +13,7 @@ import { CvType } from './type/cv.type';
 import { CreateACvDto } from './dto/create-a-cv.dto';
 import { CreateACvCommand } from '../../../../application/command/cv/create-a-cv/create-a-cv.command';
 import { ResolverException } from '../shared/exception/resolver.exception';
+import { v4 as uuidV4 } from 'uuid';
 
 @Resolver(of => CvType)
 export class CvResolver {
@@ -30,18 +31,20 @@ export class CvResolver {
     }
   }
 
-
   @Mutation(returns => CommandType)
   async createACv(
     @Context() context,
     @Args() args: CreateACvDto,
   ): Promise<CommandType> {
     try {
-      const command = plainToClass(CreateACvCommand, Object.assign({}, args, { userUuid: '47546f8f-67ba-478e-b948-a8fe2746de6e' }));
-      await this.commandBus.execute(command);
-      return plainToClass(CommandType, command, { strategy: 'excludeAll', excludeExtraneousValues: true });
+      const command = plainToClass(
+        CreateACvCommand,
+        Object.assign({}, args, { userUuid: '47546f8f-67ba-478e-b948-a8fe2746de6e', uuid: uuidV4() })
+      );
+      const handledCommand = await this.commandBus.execute(command);
+      return plainToClass(CommandType, handledCommand, { strategy: 'excludeAll', excludeExtraneousValues: true });
     } catch (e) {
-      throw this.httpException500(`Error during CV creation`, context, e);
+      throw this.httpException500(`Error during CV creation - requestId ${args.requestId}`, context, e);
     }
   }
 

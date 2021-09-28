@@ -5,13 +5,14 @@ import { LoggerAdapterService } from '../../logger/logger-adapter.service';
 import { ConnectionInterface } from '../../../domain/amqp/connection.interface';
 import { ConnectionException } from './connection.exception';
 import { LoggerVErrorInterface } from '../../logger/logger-v-error.interface';
+import { ConfigInterface } from '../../config/config.interface';
 
 @Injectable()
 export class ConnectionService implements ConnectionInterface, OnModuleInit {
   protected connection: amqp.Connection;
 
   constructor(
-    @Inject(ConfigService) protected readonly configService: ConfigService,
+    @Inject(ConfigService) protected readonly configService: ConfigInterface,
     @Inject(LoggerAdapterService) protected readonly logger: LoggerVErrorInterface,
   ) {}
 

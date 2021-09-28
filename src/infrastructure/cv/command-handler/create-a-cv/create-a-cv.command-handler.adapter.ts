@@ -2,6 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs/dist';
 import { Inject } from '@nestjs/common';
 import { CommandHandlerInterface } from '../../../../application/command/command-handler.interface';
 import { CreateACvCommand } from '../../../../application/command/cv/create-a-cv/create-a-cv.command';
+import { CommandInterface } from '../../../../application/command/command.interface';
 
 @CommandHandler(CreateACvCommand)
 export class CreateACvCommandHandlerAdapter implements ICommandHandler {
@@ -11,7 +12,7 @@ export class CreateACvCommandHandlerAdapter implements ICommandHandler {
     this._commandHandler = commandHandler;
   }
 
-  async execute(command: CreateACvCommand): Promise<CreateACvCommand> {
+  async execute(command: CreateACvCommand): Promise<CommandInterface> {
     return await this._commandHandler.handle(command);
   }
 }

@@ -14,9 +14,6 @@ import { MessageInterface } from '../../../domain/amqp/message.interface';
 import { ConsumerException } from './consumer.exception';
 import { ConnectionInterface } from '../../../domain/amqp/connection.interface';
 
-const CURRICULUM_EVENT_EXCHANGE = 'ex_curriculum_event';
-const CURRICULUM_EVENT_QUEUE = 'q_curriculum_api_to_curriculum_gw_event';
-
 @Injectable()
 export class ConsumerService extends ConnectionService implements ConsumerInterface, OnModuleInit {
   private channel: Channel;
@@ -33,18 +30,18 @@ export class ConsumerService extends ConnectionService implements ConsumerInterf
   public async onModuleInit(): Promise<void> {
     await this.connect();
     await this.setupChannel();
-    await this.consume(this.channel, CURRICULUM_EVENT_QUEUE);
+    await this.consume(this.channel, this.configService.amqpEvent.queue);
   }
 
   private async setupChannel(): Promise<void> {
     this.channel = await this.connection.createChannel();
-    await this.channel.assertExchange(CURRICULUM_EVENT_EXCHANGE, 'fanout', { durable: true });
-    await this.channel.assertQueue(CURRICULUM_EVENT_QUEUE, { autoDelete: false, durable: true });
-    await this.channel.bindQueue(CURRICULUM_EVENT_QUEUE, CURRICULUM_EVENT_EXCHANGE, '');
+    await this.channel.assertExchange(this.configService.amqpEvent.exchange, 'fanout', { durable: true });
+    await this.channel.assertQueue(this.configService.amqpEvent.queue, { autoDelete: false, durable: true });
+    await this.channel.bindQueue(this.configService.amqpEvent.queue, this.configService.amqpEvent.exchange, '');
   }
 
   public async consume(channel: Channel, queue: string): Promise<void> {
-    await channel.consume(CURRICULUM_EVENT_QUEUE, async (msg: ConsumeMessage) => {
+    await channel.consume(queue, async (msg: ConsumeMessage) => {
       const message: MessageInterface | null = this.getEventFromMessage(msg, queue);
         try {
           if (!message) {

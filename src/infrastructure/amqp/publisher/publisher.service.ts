@@ -8,9 +8,7 @@ import { ConnectionService } from '../connect/connection.service';
 import { MessageInterface } from '../../../domain/amqp/message.interface';
 import { serialize } from 'class-transformer';
 import { ConnectionInterface } from '../../../domain/amqp/connection.interface';
-
-const CURRICULUM_COMMAND_EXCHANGE = 'ex_curriculum_command';
-const CURRICULUM_COMMAND_QUEUE = 'q_curriculum_gw_to_curriculum_api_command';
+import { ConfigInterface } from '../../config/config.interface';
 
 @Injectable()
 export class PublisherService extends ConnectionService implements PublisherInterface, OnModuleInit {
@@ -18,7 +16,7 @@ export class PublisherService extends ConnectionService implements PublisherInte
 
   constructor(
     @Inject(ConnectionService) protected readonly connectionService: ConnectionInterface,
-    @Inject(ConfigService) protected readonly configService: ConfigService,
+    @Inject(ConfigService) protected readonly configService: ConfigInterface,
     @Inject(LoggerAdapterService) protected readonly logger: LoggerAdapterService,
   ) {
     super(configService, logger);
@@ -34,7 +32,7 @@ export class PublisherService extends ConnectionService implements PublisherInte
       const options: object = {  delivery_mode:	1, headers: { class: message.name }};
       const bufferedMessage = Buffer.from(serialize(message));
       await this.sendMessage(bufferedMessage, options);
-      this.logger.log(`Publisher - Message published: ${message.toString()} - ${Date.now()}`);
+      this.logger.log(`Publisher - Message published: ${bufferedMessage.toString()} - ${Date.now()}`);
     } catch (e) {
       const error = new PublisherException(e, 'PublisherService - Error on send message', { message });
       this.logger.verror(error);
@@ -43,12 +41,13 @@ export class PublisherService extends ConnectionService implements PublisherInte
   }
 
   private async sendMessage(message: Buffer, options: object): Promise<void> {
-    await this.channel.publish(CURRICULUM_COMMAND_EXCHANGE, '', message, options);
+    await this.channel.publish(this.configService.amqpCommand.exchange, '', message, options);
   }
 
   private async setupChannel(): Promise<void> {
     this.channel = await this.connection.createChannel();
-    await this.channel.assertQueue(CURRICULUM_COMMAND_QUEUE, { autoDelete: false, durable: true });
-    await this.channel.bindQueue(CURRICULUM_COMMAND_QUEUE, CURRICULUM_COMMAND_EXCHANGE, '');
+    await this.channel.assertExchange(this.configService.amqpCommand.exchange, 'fanout', { durable: true });
+    await this.channel.assertQueue(this.configService.amqpCommand.queue, { autoDelete: false, durable: true });
+    await this.channel.bindQueue(this.configService.amqpCommand.queue, this.configService.amqpCommand.exchange, '');
   }
 }
