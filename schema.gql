@@ -11,6 +11,7 @@ type CvType {
 }
 
 type Query {
+  findOneCV(uuid: String!): CvType!
   listAllCVs: [CvType!]!
 }
 

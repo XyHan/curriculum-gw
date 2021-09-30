@@ -6,7 +6,7 @@ import {
 } from '@nestjs/graphql';
 import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { LoggerAdapterService } from '../../../../infrastructure/logger/logger-adapter.service';
-import { CommandBus, ICommandBus } from '@nestjs/cqrs';
+import { CommandBus, ICommandBus, IQueryBus, QueryBus } from '@nestjs/cqrs';
 import { plainToClass } from 'class-transformer';
 import { CommandType } from '../shared/type/command.type';
 import { CvType } from './type/cv.type';
@@ -14,15 +14,33 @@ import { CreateACvDto } from './dto/create-a-cv.dto';
 import { CreateACvCommand } from '../../../../application/command/cv/create-a-cv/create-a-cv.command';
 import { ResolverException } from '../shared/exception/resolver.exception';
 import { v4 as uuidV4 } from 'uuid';
-import {UpdateACvDto} from "./dto/update-a-cv.dto";
-import {UpdateACvCommand} from "../../../../application/command/cv/update-a-cv/update-a-cv.command";
+import { UpdateACvDto } from './dto/update-a-cv.dto';
+import { UpdateACvCommand } from '../../../../application/command/cv/update-a-cv/update-a-cv.command';
+import { FindOneCvDto } from './dto/find-one-cv.dto';
+import { FindOneCvByUuidQuery } from '../../../../application/query/cv/find-one-cv-by-uuid/find-one-cv-by-uuid.query';
 
 @Resolver(of => CvType)
 export class CvResolver {
   constructor(
     @Inject(LoggerAdapterService) private readonly logger: LoggerAdapterService,
     @Inject(CommandBus) private readonly commandBus: ICommandBus,
+    @Inject(QueryBus) private readonly queryBus: IQueryBus,
   ) {}
+
+  @Query(returns => CvType)
+  public async findOneCV(
+    @Context() context,
+    @Args() args: FindOneCvDto,
+  ): Promise<CvType> {
+    try {
+      const query = plainToClass(FindOneCvByUuidQuery, Object.assign({}, args, { sources: [] }));
+      const cvDocument = await this.queryBus.execute(query);
+      if (!cvDocument) this.httpException404(`CV ${args.uuid} not found`);
+      return plainToClass(CvType, cvDocument, { strategy: 'excludeAll', excludeExtraneousValues: true });
+    } catch (e) {
+      throw this.httpException500(`Error during find one cv with uuid ${args.uuid}`, context, e);
+    }
+  }
 
   @Query(returns => [CvType])
   public async listAllCVs(@Context() context): Promise<CvType[]> {
@@ -70,5 +88,10 @@ export class CvResolver {
   private httpException500(message: string, context: any, cause: Error): HttpException {
     this.logger.verror(new ResolverException(`CvResolver - ${message}`, context, cause));
     return new HttpException(message, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  private httpException404(message: string): HttpException {
+    this.logger.log(message);
+    return new HttpException(message, HttpStatus.NOT_FOUND);
   }
 }

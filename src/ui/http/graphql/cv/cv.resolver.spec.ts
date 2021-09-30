@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../../../app.module';
-import { createACvCommandHandlerProvider } from '../../../../infrastructure/cv/provider/create-a-cv.command-handler.provider';
+import { createACvCommandHandlerProvider } from '../../../../infrastructure/cv/provider/command/create-a-cv.command-handler.provider';
 import { PublisherInterface } from '../../../../domain/amqp/publisher.interface';
 import { LoggerInterface } from '../../../../domain/utils/logger/logger.interface';
 import { CreateACvCommandHandler } from '../../../../application/command/cv/create-a-cv/create-a-cv.command-handler';
