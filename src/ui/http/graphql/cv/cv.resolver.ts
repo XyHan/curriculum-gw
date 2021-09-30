@@ -14,6 +14,8 @@ import { CreateACvDto } from './dto/create-a-cv.dto';
 import { CreateACvCommand } from '../../../../application/command/cv/create-a-cv/create-a-cv.command';
 import { ResolverException } from '../shared/exception/resolver.exception';
 import { v4 as uuidV4 } from 'uuid';
+import {UpdateACvDto} from "./dto/update-a-cv.dto";
+import {UpdateACvCommand} from "../../../../application/command/cv/update-a-cv/update-a-cv.command";
 
 @Resolver(of => CvType)
 export class CvResolver {
@@ -45,6 +47,23 @@ export class CvResolver {
       return plainToClass(CommandType, handledCommand, { strategy: 'excludeAll', excludeExtraneousValues: true });
     } catch (e) {
       throw this.httpException500(`Error during CV creation - requestId ${args.requestId}`, context, e);
+    }
+  }
+
+  @Mutation(returns => CommandType)
+  async updateACv(
+    @Context() context,
+    @Args() args: UpdateACvDto,
+  ): Promise<CommandType> {
+    try {
+      const command = plainToClass(
+        UpdateACvCommand,
+        Object.assign({}, args, { userUuid: '47546f8f-67ba-478e-b948-a8fe2746de6e' })
+      );
+      const handledCommand = await this.commandBus.execute(command);
+      return plainToClass(CommandType, handledCommand, { strategy: 'excludeAll', excludeExtraneousValues: true });
+    } catch (e) {
+      throw this.httpException500(`Error during CV update - requestId ${args.requestId} | uuid: ${args.uuid}`, context, e);
     }
   }
 

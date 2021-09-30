@@ -15,7 +15,8 @@ type Query {
 }
 
 type Mutation {
-  createACv(requestId: String!, lastname: String!, forname: String!, city: String!, zipCode: Float!, email: String!, birthday: DateTime!, nationality: String!, githubLink: String!, title: String!): CommandType!
+  createACv(requestId: String!, lastname: String!, firstname: String!, city: String!, zipCode: Float!, email: String!, birthday: DateTime!, nationality: String!, githubLink: String!, title: String!): CommandType!
+  updateACv(requestId: String!, uuid: String!, lastname: String!, firstname: String!, city: String!, zipCode: Float!, email: String!, birthday: DateTime!, nationality: String!, githubLink: String!, title: String!): CommandType!
 }
 
 """An ISO-8601 encoded UTC date string."""

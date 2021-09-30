@@ -1,7 +1,7 @@
 import { CommandInterface } from '../../command.interface';
 
-export class CreateACvCommand implements CommandInterface {
-  public readonly name: string = 'CreateACVCommand';
+export class UpdateACvCommand implements CommandInterface {
+  public readonly name: string = 'UpdateACVCommand';
   public readonly version: number = 1;
   
   constructor(
