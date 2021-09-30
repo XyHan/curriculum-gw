@@ -6,6 +6,7 @@ export class ConfigService implements ConfigInterface {
   public readonly configAmqp: IConfigAmqp;
   public readonly amqpEvent: { queue: string; exchange: string };
   public readonly amqpCommand: { queue: string; exchange: string };
+  public readonly esNode: string;
 
   constructor() {
     this.configAmqp = {
@@ -25,5 +26,7 @@ export class ConfigService implements ConfigInterface {
       queue: process.env.AMQP_COMMAND_QUEUE,
       exchange: process.env.AMQP_COMMAND_EX
     };
+
+    this.esNode = process.env.ES_NODE;
   }
 }

@@ -4,6 +4,7 @@ import { LoggerModule } from './logger/logger.module';
 import { CvModule } from './cv/cv.module';
 import { ConfigModule as AppConfigModule }  from './config/config.module';
 import { ConfigModule } from '@nestjs/config';
+import { SearchModule } from './elasticsearch/search.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ConfigModule } from '@nestjs/config';
     CqrsModule,
     LoggerModule,
     CvModule,
+    SearchModule
   ],
 })
 export class InfrastructureModule {}
