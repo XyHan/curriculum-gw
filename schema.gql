@@ -8,6 +8,15 @@ type CommandType {
 
 type CvType {
   uuid: String!
+  birthday: String!
+  city: String!
+  email: String!
+  firstname: String!
+  githubLink: String!
+  lastname: String!
+  nationality: String!
+  title: String!
+  zipCode: Float!
 }
 
 type Query {

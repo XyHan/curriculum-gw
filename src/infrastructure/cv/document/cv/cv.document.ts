@@ -24,13 +24,7 @@ export class CvDocument implements CVInterface {
   nationality: string;
 
   @Expose()
-  requestId: string;
-
-  @Expose()
   title: string;
-
-  @Expose()
-  userUuid: string;
 
   @Expose()
   uuid: string;

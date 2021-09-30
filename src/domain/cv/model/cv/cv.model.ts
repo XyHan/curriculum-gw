@@ -1,6 +1,4 @@
 export interface CVInterface {
-  requestId: string;
-  userUuid: string;
   uuid: string;
   lastname: string;
   firstname: string;
@@ -21,9 +19,7 @@ export class CvModel implements CVInterface {
   private _githubLink: string;
   private _lastname: string;
   private _nationality: string;
-  private _requestId: string;
   private _title: string;
-  private _userUuid: string;
   private _uuid: string;
   private _zipCode: number;
 
@@ -83,28 +79,12 @@ export class CvModel implements CVInterface {
     this._nationality = value;
   }
 
-  get requestId(): string {
-    return this._requestId;
-  }
-
-  set requestId(value: string) {
-    this._requestId = value;
-  }
-
   get title(): string {
     return this._title;
   }
 
   set title(value: string) {
     this._title = value;
-  }
-
-  get userUuid(): string {
-    return this._userUuid;
-  }
-
-  set userUuid(value: string) {
-    this._userUuid = value;
   }
 
   get uuid(): string {
