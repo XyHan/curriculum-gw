@@ -7,6 +7,7 @@ export class ConfigService implements ConfigInterface {
   public readonly amqpEvent: { queue: string; exchange: string };
   public readonly amqpCommand: { queue: string; exchange: string };
   public readonly esNode: string;
+  public readonly esIndexes: Map<string, string>;
 
   constructor() {
     this.configAmqp = {
@@ -28,5 +29,9 @@ export class ConfigService implements ConfigInterface {
     };
 
     this.esNode = process.env.ES_NODE;
+
+    this.esIndexes = new Map<string, string>([
+      ['cv', process.env.CV_ES_INDEX]
+    ]);
   }
 }

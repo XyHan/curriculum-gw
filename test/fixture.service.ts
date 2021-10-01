@@ -4,6 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import { ElasticsearchService } from "@nestjs/elasticsearch";
 import { CvDataES } from './data/cv/cv.data-es';
 import { CVInterface } from '../src/domain/cv/model/cv/cv.model';
+import { ConfigService } from '../src/infrastructure/config/config.service';
 
 export class FixtureService {
   public static async init(): Promise<INestApplication> {
@@ -25,19 +26,20 @@ export class FixtureService {
 
   private static async loadFixtures(app: INestApplication): Promise<void> {
     const elasticsearchService: ElasticsearchService = app.get(ElasticsearchService);
-    await this.loadCvFixtures(elasticsearchService);
+    await this.loadCvFixtures(app, elasticsearchService);
   }
 
   private static async deleteFixtures(app: INestApplication): Promise<void> {
+    const configService: ConfigService = app.get(ConfigService);
+    const indexes: string[] = [...configService.esIndexes.values()];
     const elasticsearchService: ElasticsearchService = app.get(ElasticsearchService);
-    const indexes: string[] = [CvDataES.index];
     await Promise.all(indexes.map((index: string) => this.deleteData(elasticsearchService, index)));
   }
 
-  private static async loadCvFixtures(elasticsearchService: ElasticsearchService): Promise<void> {
-    const index = CvDataES.index;
-    await Promise.all(CvDataES.data.map((datum: CVInterface) => {
-      this.indexData(elasticsearchService, index, datum);
+  private static async loadCvFixtures(app: INestApplication, elasticsearchService: ElasticsearchService): Promise<void> {
+    const configService: ConfigService = app.get(ConfigService);
+    await Promise.all(CvDataES.map((datum: CVInterface) => {
+      this.indexData(elasticsearchService, configService.esIndexes.get('cv'), datum);
     }));
   }
 

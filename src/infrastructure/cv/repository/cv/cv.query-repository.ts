@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import { CvQueryRepositoryInterface } from '../../../../domain/cv/repository/cv.query-repository.interface';
 import { CVInterface } from '../../../../domain/cv/model/cv/cv.model';
 import { optionsFindAll, optionsFindOne } from '../../../../domain/shared/repository/repository.type';
@@ -11,13 +11,10 @@ import { CvDocument } from '../../document/cv/cv.document';
 
 @Injectable()
 export class CvQueryRepository implements CvQueryRepositoryInterface {
-  private readonly index: string;
-  private readonly elasticsearchService: ElasticsearchService
-
-  constructor(elasticsearchService: ElasticsearchService) {
-    this.elasticsearchService = elasticsearchService;
-    this.index = 'cv';
-  }
+  constructor(
+    private readonly elasticsearchService: ElasticsearchService,
+    @Inject('CV_ES_INDEX') private readonly index: string,
+  ) {}
 
   public async findOne(options: optionsFindOne): Promise<CVInterface | null> {
     const query: GetQuery = new GetQueryBuilder(this.index, options.uuid)

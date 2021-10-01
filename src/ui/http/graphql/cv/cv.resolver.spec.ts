@@ -1,15 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../../../../app.module';
-import { createACvCommandHandlerProvider } from '../../../../infrastructure/cv/provider/command/create-a-cv.command-handler.provider';
-import { PublisherInterface } from '../../../../domain/amqp/publisher.interface';
-import { LoggerInterface } from '../../../../domain/utils/logger/logger.interface';
-import { CreateACvCommandHandler } from '../../../../application/command/cv/create-a-cv/create-a-cv.command-handler';
-import { PublisherService } from '../../../../infrastructure/amqp/publisher/publisher.service';
-import { LoggerAdapterService } from '../../../../infrastructure/logger/logger-adapter.service';
-import { ConfigService } from '../../../../infrastructure/config/config.service';
-import { ConfigInterface } from '../../../../infrastructure/config/config.interface';
+import { FixtureService } from '../../../../../test/fixture.service';
 
 // Disables log
 jest.mock('@nestjs/common/services/logger.service');
@@ -17,23 +8,13 @@ jest.mock('@nestjs/common/services/logger.service');
 describe('CvResolver tests', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(createACvCommandHandlerProvider)
-      .useValue({
-        provide: 'CREATE_A_CV_COMMAND_HANDLER',
-        useFactory: (publisher: PublisherInterface, logger: LoggerInterface, config: ConfigInterface) => {
-          return new CreateACvCommandHandler(publisher, logger, config);
-        },
-        inject: [PublisherService, LoggerAdapterService, ConfigService],
-      })
-      .compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
+  beforeAll(async () => {
+    app = await FixtureService.init();
   });
+
+  afterAll(async () => {
+    await FixtureService.close(app);
+  })
 
   describe('success', () => {
     it('createACv mutation success', async () => {
@@ -89,6 +70,34 @@ describe('CvResolver tests', () => {
         });
       const data = response?.body?.data?.updateACv;
       expect(data?.requestId).toEqual('181a146e-8c58-44c2-a828-1439b606e1e7');
+    });
+
+    it('FindOneCV query success', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          query: `
+            {
+              findOneCV(uuid: "236ab0d3-adc4-498d-bce8-95c5bcdfb4d3") {
+                birthday
+                city
+                email
+                firstname
+                githubLink
+                lastname
+                nationality
+                uuid
+                zipCode
+                title
+              }
+            }
+        `
+        });
+      const data = response?.body?.data?.findOneCV;
+      expect(data?.uuid).toEqual('236ab0d3-adc4-498d-bce8-95c5bcdfb4d3');
+      expect(data?.firstname).toEqual('Joyce');
+      expect(data?.lastname).toEqual('Byers');
+      expect(data?.title).toEqual('Vendeuse');
     });
   });
 

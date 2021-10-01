@@ -3,6 +3,7 @@ export interface ConfigInterface {
   amqpEvent: { queue: string; exchange: string };
   amqpCommand: { queue: string; exchange: string };
   esNode: string;
+  esIndexes: Map<string, string>;
 }
 
 export interface IConfigAmqp {
