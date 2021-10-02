@@ -5,12 +5,14 @@ import { PublisherService } from './publisher/publisher.service';
 import { ConsumerService } from './consumer/consumer.service';
 import { ConnectionService } from './connect/connection.service';
 import { CqrsModule } from '@nestjs/cqrs';
+import { PubSubModule } from '../pub-sub/pub-sub.module';
 
 @Module({
   imports: [
     CqrsModule,
     ConfigModule,
-    LoggerModule
+    LoggerModule,
+    PubSubModule,
   ],
   providers: [
     ConnectionService,

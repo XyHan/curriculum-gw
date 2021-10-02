@@ -2,7 +2,7 @@ import {
   Args,
   Context,
   Mutation, Query,
-  Resolver,
+  Resolver, Subscription,
 } from '@nestjs/graphql';
 import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { LoggerAdapterService } from '../../../../infrastructure/logger/logger-adapter.service';
@@ -18,6 +18,7 @@ import { UpdateACvDto } from './dto/update-a-cv.dto';
 import { UpdateACvCommand } from '../../../../application/command/cv/update-a-cv/update-a-cv.command';
 import { FindOneCvDto } from './dto/find-one-cv.dto';
 import { FindOneCvByUuidQuery } from '../../../../application/query/cv/find-one-cv-by-uuid/find-one-cv-by-uuid.query';
+import { PubSubAdapter, PubSubInterface } from '../../../../infrastructure/pub-sub/pub-sub.adapter';
 
 @Resolver(of => CvType)
 export class CvResolver {
@@ -25,6 +26,7 @@ export class CvResolver {
     @Inject(LoggerAdapterService) private readonly logger: LoggerAdapterService,
     @Inject(CommandBus) private readonly commandBus: ICommandBus,
     @Inject(QueryBus) private readonly queryBus: IQueryBus,
+    @Inject(PubSubAdapter) private readonly pubSub: PubSubInterface,
   ) {}
 
   @Query(returns => CvType)
@@ -66,6 +68,11 @@ export class CvResolver {
     } catch (e) {
       throw this.httpException500(`Error during CV creation - requestId ${args.requestId}`, context, e);
     }
+  }
+
+  @Subscription(returns => CvType)
+  createdCv() {
+    return this.pubSub.asyncIterator('createdCv');
   }
 
   @Mutation(returns => CommandType)

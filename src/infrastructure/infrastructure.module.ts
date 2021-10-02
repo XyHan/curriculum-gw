@@ -5,6 +5,7 @@ import { CvModule } from './cv/cv.module';
 import { ConfigModule as AppConfigModule }  from './config/config.module';
 import { ConfigModule } from '@nestjs/config';
 import { SearchModule } from './elasticsearch/search.module';
+import { PubSubModule } from './pub-sub/pub-sub.module';
 
 @Module({
   imports: [
@@ -13,7 +14,11 @@ import { SearchModule } from './elasticsearch/search.module';
     CqrsModule,
     LoggerModule,
     CvModule,
-    SearchModule
+    SearchModule,
+    PubSubModule,
+  ],
+  exports: [
+    PubSubModule
   ],
 })
 export class InfrastructureModule {}
