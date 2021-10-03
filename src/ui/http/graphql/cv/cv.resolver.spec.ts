@@ -72,6 +72,25 @@ describe('CvResolver tests', () => {
       expect(data?.requestId).toEqual('181a146e-8c58-44c2-a828-1439b606e1e7');
     });
 
+    it('deleteACv mutation success', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          query: `
+            mutation  deleteACv {
+              deleteACv(
+                requestId: "181a146e-8c58-44c2-a828-1439b606e1e7"
+                uuid: "5643be26-29c7-44dd-a336-7dd6909fd909"
+              ) {
+                requestId
+              }
+            }
+        `
+        });
+      const data = response?.body?.data?.deleteACv;
+      expect(data?.requestId).toEqual('181a146e-8c58-44c2-a828-1439b606e1e7');
+    });
+
     it('FindOneCV query success', async () => {
       const response = await request(app.getHttpServer())
         .post('/graphql')
@@ -157,6 +176,43 @@ describe('CvResolver tests', () => {
       expect(errors[7].message).toEqual('Field "updateACv" argument "nationality" of type "String!" is required, but it was not provided.');
       expect(errors[8].message).toEqual('Field "updateACv" argument "githubLink" of type "String!" is required, but it was not provided.');
       expect(errors[9].message).toEqual('Field "updateACv" argument "title" of type "String!" is required, but it was not provided.');
+    });
+
+    it('deleteACv mutation - fields missing - error', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          query: `
+            mutation deleteACv {
+              deleteACv(
+                requestId: "181a146e-8c58-44c2-a828-1439b606e1e7"
+              ) {
+                requestId
+              }
+            }
+        `
+        });
+      const errors = response?.body?.errors;
+      expect(errors).toBeDefined();
+      expect(errors.length).toEqual(1);
+      expect(errors[0].message).toEqual('Field "deleteACv" argument "uuid" of type "String!" is required, but it was not provided.');
+    });
+
+    it('FindOneCV query 404', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          query: `
+            {
+              findOneCV(uuid: "236ab0d3-xxxx-xxxx-bce8-95c5bcdfb4d3") {
+                birthday
+              }
+            }
+        `
+        });
+      const errors = response?.body?.errors;
+      expect(errors.length).toEqual(1);
+      expect(errors[0].message).toEqual('CV 236ab0d3-xxxx-xxxx-bce8-95c5bcdfb4d3 not found');
     });
   });
 });

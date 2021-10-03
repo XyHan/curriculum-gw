@@ -1,12 +1,16 @@
 import { ArgsType, Field } from '@nestjs/graphql';
 import { IsString, IsNumber } from 'class-validator';
-import { DateTime } from '../../shared/type/datetime.type';
+import { DateTime } from '../../../shared/type/datetime.type';
 
 @ArgsType()
-export class CreateACvDto {
+export class UpdateACvDto {
   @Field(type => String)
   @IsString()
   public requestId: string;
+
+  @Field(type => String)
+  @IsString()
+  public uuid: string;
 
   @Field(type => String)
   @IsString()

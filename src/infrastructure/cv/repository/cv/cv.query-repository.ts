@@ -26,7 +26,7 @@ export class CvQueryRepository implements CvQueryRepositoryInterface {
       const response: ApiResponse<any> = await this.elasticsearchService.get<CvDocument>(query);
       return plainToClass(CvDocument, response.body._source, { strategy: 'excludeAll', excludeExtraneousValues: true });
     } catch (e) {
-      if (e.status === 404) {
+      if (e.meta?.statusCode === 404) {
         return null;
       }
       throw new CvQueryRepositoryException(`CvQueryRepository - Error on findOne uuid '${options.uuid}'`, query, e);

@@ -7,6 +7,7 @@ import { CvQueryRepository } from './repository/cv/cv.query-repository';
 import { CvCommandHandler } from './command-handler';
 import { createACvCommandHandlerProvider } from './provider/command/create-a-cv.command-handler.provider';
 import { updateACvCommandHandlerProvider } from './provider/command/update-a-cv.command-handler.provider';
+import { deleteACvCommandHandlerProvider } from './provider/command/delete-a-cv.command-handler.provider';
 import { findOneCvByUuidQueryHandlerProvider } from './provider/query/find-one-cv-by-uuid.query-handler.provider';
 import { CvQueryHandler } from './query-handler';
 import { cvEsIndexProvider } from './provider/index/cv-es-index.provider';
@@ -23,6 +24,7 @@ import { cvEsIndexProvider } from './provider/index/cv-es-index.provider';
     CvQueryRepository,
     createACvCommandHandlerProvider,
     updateACvCommandHandlerProvider,
+    deleteACvCommandHandlerProvider,
     ...CvCommandHandler,
     findOneCvByUuidQueryHandlerProvider,
     ...CvQueryHandler,

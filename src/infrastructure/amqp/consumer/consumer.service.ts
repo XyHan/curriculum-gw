@@ -9,8 +9,10 @@ import { LoggerAdapterService } from '../../logger/logger-adapter.service';
 import { ConsumerException } from './consumer.exception';
 import { ConnectionInterface } from '../../../domain/amqp/connection.interface';
 import { PubSubAdapter, PubSubInterface } from '../../pub-sub/pub-sub.adapter';
-import {plainToClass} from "class-transformer";
-import {CvType} from "../../../ui/http/graphql/cv/type/cv.type";
+import { deserialize } from 'class-transformer';
+import { CreatedCvEvent } from '../../../application/event/cv/created-cv.event';
+import { UpdatedCvEvent } from '../../../application/event/cv/updated-cv.event';
+import { DeletedCvEvent } from '../../../application/event/cv/deleted-cv.event';
 
 @Injectable()
 export class ConsumerService extends ConnectionService implements ConsumerInterface, OnModuleInit {
@@ -39,24 +41,37 @@ export class ConsumerService extends ConnectionService implements ConsumerInterf
   }
 
   public async consume(channel: Channel, queue: string): Promise<void> {
-    await channel.consume(queue, async (msg: ConsumeMessage) => {
+    await channel.consume(queue, async (message: ConsumeMessage) => {
         try {
-          if (!msg) {
-            channel.ack(msg, false);
+          if (!message) {
+            channel.ack(message, false);
             return;
           }
-          // const titi: string = JSON.parse(msg.content.toString()).name;
-          // const toto: string | undefined = titi.split('\\').pop();
-          // await this.pubSub.publish('createdCv', { createdCv: msg.content.toString() });
-          await this.pubSub.publish('createdCv', { createdCv: plainToClass(CvType, { uuid: 'toto' }) });
-          channel.ack(msg, false);
-          this.logger.log(`ConsumerService - consume - message: ${msg.content.toString()}`);
+          await this.messageToPubSub(message);
+          channel.ack(message, false);
+          this.logger.log(`ConsumerService - consume - message: ${message.content.toString()}`);
         } catch (e) {
-          const error = new ConsumerException(e, 'ConsumerService - Error on send message', { msg });
+          const error = new ConsumerException(e, 'ConsumerService - Error on send message', { message });
           this.logger.verror(error);
           throw error;
         }
       }
     );
+  }
+
+  public async messageToPubSub(message: ConsumeMessage): Promise<void> {
+    const eventName: string | undefined = JSON.parse(message.content.toString())?.name?.split('\\')?.pop();
+    if (!eventName) throw new ConsumerException(new Error(), 'ConsumerService - getEventFromMessage - event name not found', { message });
+
+    switch(eventName) {
+      case 'CreatedCVEvent':
+        return await this.pubSub.publish('createdCv', { createdCv: deserialize(CreatedCvEvent, message.content.toString()) });
+      case 'UpdatedCVEvent':
+        return await this.pubSub.publish('updatedCv', { updatedCv: deserialize(UpdatedCvEvent, message.content.toString()) });
+      case 'DeletedCVEvent':
+        return await this.pubSub.publish('deletedCv', { deletedCv: deserialize(DeletedCvEvent, message.content.toString()) });
+      default:
+        throw new ConsumerException(new Error(), 'ConsumerService - getEventFromMessage - event not found', { message });
+    }
   }
 }

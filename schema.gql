@@ -2,6 +2,10 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type CommandType {
+  requestId: String!
+}
+
 type CvType {
   uuid: String!
   birthday: String!
@@ -15,8 +19,9 @@ type CvType {
   zipCode: Float!
 }
 
-type CommandType {
-  requestId: String!
+type CvEventType {
+  cv: CvType!
+  name: String!
 }
 
 type Query {
@@ -27,11 +32,14 @@ type Query {
 type Mutation {
   createACv(requestId: String!, lastname: String!, firstname: String!, city: String!, zipCode: Float!, email: String!, birthday: DateTime!, nationality: String!, githubLink: String!, title: String!): CommandType!
   updateACv(requestId: String!, uuid: String!, lastname: String!, firstname: String!, city: String!, zipCode: Float!, email: String!, birthday: DateTime!, nationality: String!, githubLink: String!, title: String!): CommandType!
+  deleteACv(requestId: String!, uuid: String!): CommandType!
 }
 
 """An ISO-8601 encoded UTC date string."""
 scalar DateTime
 
 type Subscription {
-  createdCv: CvType!
+  createdCv: CvEventType!
+  updatedCv: CvEventType!
+  deletedCv: CvEventType!
 }
